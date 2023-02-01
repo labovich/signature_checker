@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>{% block title %} Signature validator  {% endblock %}</h1>
+{% if request.method == 'POST' %}
+    {% if success %}
+        <script>alert('The message is authentic.')</script>
+    {% else %}
+        <script>alert('The message is not authentic.')</script>
+    {% endif %}
+{% endif %}
+
+
+<form method="post">
+    <label for="title">Certificate</label>
+    <br>
+    <textarea name="certificate"
+              placeholder="Certificate"
+              rows="15"
+              cols="60"
+             >{{ request.form['certificate'] }}</textarea>
+    <br>
+
+    <label for="title">Message</label>
+    <br>
+    <textarea name="message"
+              placeholder="Message"
+              rows="15"
+              cols="60"
+              >{{ request.form['message']}}</textarea>
+    <br>
+
+    <label for="content">Signature</label>
+    <br>
+    <textarea name="signature"
+              placeholder="Signature"
+              rows="15"
+              cols="60"
+    >{{  request.form['signature']}}</textarea>
+    <br>
+    <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>
