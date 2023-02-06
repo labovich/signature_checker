@@ -1,12 +1,24 @@
 import base64
+import json
+from dataclasses import dataclass
+from datetime import datetime
 
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your secret key'
+
+DB = []
+
+
+@dataclass
+class CallbackItem:
+    signature: str
+    message: str
+    datetime: datetime
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -38,6 +50,28 @@ def create():
             pass
 
     return render_template('index.html', request=request, success=success)
+
+
+@app.route('/callbacks', methods=('GET', 'POST'))
+def callback():
+    if request.method == 'POST':
+        signature = request.headers.get("x-opendsr-signature")
+        message = request.stream.read()
+        message = message.decode("utf-8")
+
+        print(signature)
+        print(message)
+
+        DB.append(CallbackItem(
+            message=message,
+            signature=signature,
+            datetime=datetime.utcnow(),
+
+        ))
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+    return render_template('callbacks.html', request=request, database=reversed(DB))
+
 
 if __name__ == '__main__':
     app.run()
